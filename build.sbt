@@ -28,6 +28,7 @@ ivyXML := (
 <dependencies>
  <exclude module="jmxtools"/>
  <exclude module="jmxri"/>
+ <exclude module="jms"/>
  <exclude org="org.apache" name="hadoop-core"/>
 </dependencies>
 )
