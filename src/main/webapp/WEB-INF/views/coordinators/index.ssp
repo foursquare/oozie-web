@@ -1,0 +1,28 @@
+<% import org.apache.oozie.client.CoordinatorJob %>
+<% import scalaj.collection.Imports._ %>
+<% import com.foursquare.oozie.dashboard.Implicits._ %>
+<%@ var jobs: List[CoordinatorJob] %>
+
+<h2>Active Coordinators</h2>
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+    <th>Name</th>
+    <th>Author</th>
+    <th>Last Action</th>
+    <th>Status</th>
+    <th>Author</th>
+  </tr>  
+  </thead>
+  <tbody>
+    #for(workflow <- jobs)
+      <tr>
+        <td><a href="/coordinators/${workflow.getId}">${workflow.getAppName}</a>  <span class="mini">(${workflow.getId})</span></td>
+        <td>${workflow.getUser}</td>
+        <td>${workflow.getLastActionTime.pp}</td>
+        <td>${workflow.getStatus.toString}</td>
+        <td>${workflow.getUser}</td>
+      </tr>
+    #end  
+  </tbody>
+</table>

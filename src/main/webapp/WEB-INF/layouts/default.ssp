@@ -1,0 +1,45 @@
+<%@ var body: String %>
+<%@ var title: String = "Oozie" %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>${title} : oozie-web</title>
+
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <style type="text/css">
+      body {
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="/static/css/oozie.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a href="/" class="brand">Oozie</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li><a href="/workflows">Workflows</a></li>
+              <li><a href="/coordinators">Coordinators</a></li>
+              <li></li>
+            </ul>
+          </div>
+          <form class="navbar-form pull-left" action="/search" method="get">
+            <input type="text" name="q" class="span4 search-query" placeholder="Search Jobs (alpha)">
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="mainstuff">
+      <div class="container">
+        ${unescape(body)}    
+      </div>
+    </div>
+    
+  </body>
+</html>

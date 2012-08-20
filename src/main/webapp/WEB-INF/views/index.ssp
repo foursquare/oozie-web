@@ -1,0 +1,56 @@
+<% import org.apache.oozie.client.CoordinatorJob %>
+<% import org.apache.oozie.client.WorkflowJob %>
+<% import scalaj.collection.Imports._ %>
+<% import com.foursquare.oozie.dashboard.Implicits._ %>
+
+<%@ var coordinators: List[CoordinatorJob] %>
+<%@ var workflows: List[WorkflowJob] %>
+<%@ var title: String = "Running Now" %>
+
+<h2>${title}</h2>
+
+<h3> ${workflows.size} Workflows</h3>
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+    <th>Name</th>
+    <th>Author</th>
+    <th>Status</th>
+    <th>Submitted</th>
+  </tr>  
+  </thead>
+  <tbody>
+    #for(workflow <- workflows)
+      <tr>
+        <td><a href="/workflows/${workflow.getId}">${workflow.getAppName}</a>  <span class="mini">(${workflow.getId})</span></td>
+        <td>${workflow.getUser}</td>
+        <td>${workflow.getStatus.toString}</td>
+        <td>${workflow.getStartTime.pp}</td>
+      </tr>
+    #end  
+  </tbody>
+</table>
+
+
+<h3>${coordinators.size} Coordinators</h3>
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+    <th>Name</th>
+    <th>Author</th>
+    <th>Last Action</th>
+    <th>Status</th>
+    <th>Author</th>
+  </tr>  
+  </thead>
+  <tbody>
+    #for(workflow <- coordinators)
+      <tr>
+        <td><a href="/coordinators/${workflow.getId}">${workflow.getAppName}</a>  <span class="mini">(${workflow.getId})</span></td>
+        <td>${workflow.getUser}</td>
+        <td>${workflow.getLastActionTime.pp}</td>
+        <td>${workflow.getStatus.toString}</td>
+        <td>${workflow.getUser}</td>
+      </tr>
+    #end  
+  </tbody>

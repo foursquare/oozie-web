@@ -1,0 +1,11 @@
+Oozie-Web
+
+A pretty, more usable dashboard for Apache Oozie built with Scala, Scalatra, and Twitter Bootstrap
+
+
+
+GETTING STARTED
+1) cp src/main/resources/oozie.properties.example src/main/resources/oozie.properties
+2) edit oozie.properties with your oozieUrl of choice
+3) sbt container:start
+4) browse to localhost:8080

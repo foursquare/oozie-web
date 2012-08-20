@@ -1,0 +1,47 @@
+<% import org.apache.oozie.client.WorkflowJob %>
+<% import com.foursquare.oozie.dashboard.Implicits._ %>
+<%@ var workflows: List[WorkflowJob] %>
+<%@ var page: Int = 1 %>
+<h2>Workflows (page ${page})</h2>
+
+<ul class="pager">
+  #if (page > 1)
+  <li class="previous">
+    <a href="?page=${page - 1}">&larr; Older</a>
+  </li>
+  #end
+  <li class="next">
+    <a href="?page=${page+1}">Newer &rarr;</a>
+  </li>
+</ul>
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+    <th>Name</th>
+    <th>Created</th>
+    <th>User</th>
+    <th>Status</th>
+  </tr>  
+  </thead>
+  <tbody>
+    #for(workflow <- workflows)
+      <tr>
+        <td><a href="/workflows/${workflow.getId}">${workflow.getAppName}</a>  <span class="mini">(${workflow.getId})</span></td>
+        <td>${workflow.getCreatedTime.pp}</td>
+        <td>${workflow.getUser}</td>
+        <td>${workflow.getStatus.toString}</td>
+      </tr>
+    #end  
+  </tbody>
+</table>
+
+<ul class="pager">
+  #if (page > 1)
+  <li class="previous">
+    <a href="?page=${page - 1}">&larr; Older</a>
+  </li>
+  #end
+  <li class="next">
+    <a href="?page=${page+1}">Newer &rarr;</a>
+  </li>
+</ul>

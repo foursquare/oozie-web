@@ -1,0 +1,148 @@
+// Copyright 2012 Foursquare Labs Inc. All Rights Reserved.
+
+package com.foursquare.oozie.dashboard
+
+import com.typesafe.config.ConfigFactory
+import org.apache.oozie.client.OozieClient
+// import org.eclipse.jetty.server.Server
+// import org.eclipse.jetty.servlet.{ServletContextHandler, ServletHolder}
+import org.scalatra.ScalatraServlet
+import org.scalatra.scalate.ScalateSupport
+import scalaj.collection.Imports._
+// import org.eclipse.jetty.server.handler.ContextHandler;
+// import org.eclipse.jetty.server.handler.HandlerList;
+// import org.eclipse.jetty.server.handler.ResourceHandler;
+// import org.eclipse.jetty.server.nio.SelectChannelConnector;
+// import org.eclipse.jetty.webapp.WebAppContext;
+import java.text.SimpleDateFormat
+import java.util.Date
+
+object Implicits {
+  implicit def prettyDate(d: Date): PrettyDate = new PrettyDate(d)
+}
+
+class PrettyDate(d: Date) {
+  val formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+  def pp = {
+    d match {
+      case null => "<null>"
+      case date => formatter.format(d);    
+    }
+  }
+}
+
+class OozieDashboard() extends ScalatraServlet with ScalateSupport {
+
+
+  val conf = ConfigFactory.load("oozie")
+
+  var oozie = new OozieClient(conf.getString("oozieUrl"))
+
+
+  try { 
+    oozie.validateWSVersion()
+  } catch {
+    case e: Exception => {
+      throw e
+    }
+  }
+  
+  before() {
+    contentType = "text/html"
+  }
+
+  def view(name: String) = "WEB-INF/views/%s" format(name)
+
+  get("/") {    
+    val filter = "status=RUNNING;status=PREP"
+    val workflows = oozie.getJobsInfo(filter, 0, 1000).asScala.toList
+    val coordinators = oozie.getCoordJobsInfo(filter, 0, 1000).asScala.toList
+    ssp(view("index.ssp"), "workflows" -> workflows, "coordinators" -> coordinators)
+  }
+
+  get("/workflows") {
+    val perPage = 50
+    val offset = params.get("page").map(_.toInt).getOrElse(1)
+
+    val start = (offset-1) * perPage
+    val filter = null
+    val jobs = oozie.getJobsInfo(filter, start, perPage).asScala.toList
+    ssp(view("workflows/index.ssp"), "workflows" -> jobs, "page" -> offset)
+  }
+
+  get("/workflows/:id") {
+    params.get("id") match {
+      case Some(id) => {
+        val workflow = oozie.getJobInfo(id, 0, 1000)
+        ssp(view("workflows/show.ssp"), "workflow" -> workflow)
+      }
+      case _ => halt(404)
+    }
+  }
+
+  get("/coordinators") {
+    val perPage = 1000
+    val jobs = oozie.getCoordJobsInfo("status=RUNNING;status=PREP", 0, 1000).asScala.toList
+    ssp(view("coordinators/index.ssp"), "jobs" -> jobs)
+  }
+
+  get("/coordinators/:id") {
+    params.get("id") match {
+      case Some(id) => {
+        val job = oozie.getCoordJobInfo(id, 0, 1000)
+        ssp(view("coordinators/show.ssp"), "job" -> job)
+      }
+      case _ => halt(404)
+    }
+  }
+
+  get("/search") {
+    params.get("q") match {
+      case Some(query) => {
+        val workflows = oozie.getJobsInfo(null, 0, 500).asScala.filter(_.getAppName.contains(query))
+        val coordinators = oozie.getCoordJobsInfo(null, 0, 500).asScala.filter(_.getAppName.contains(query))
+        ssp(view("index.ssp"), 
+          "workflows" -> workflows, 
+          "coordinators" -> coordinators, 
+          "title" -> "Jobs containing '%s'".format(query),
+          "viewMore" -> false
+          )
+      }
+      case _ => redirect("/")
+    }
+  }
+
+
+}
+
+// object JettyLauncher { 
+//   def main(args: Array[String]) {
+//     if (args.size < 2) {
+//       println.error("usage: ./oozieDash <port> <oozieUrl>")
+//       return
+//     }
+//     val port = args(0).toInt
+//     val oozie = args(1)
+//     val server = new Server(port)
+
+//     val static = new ResourceHandler()
+//     static.setResourceBase("core/src/main/scalate/com/foursquare/oozie/dashboard/static")
+//     static.setDirectoriesListed(false)
+
+//     val staticContext = new ContextHandler()
+//     staticContext.setContextPath("/static");
+//     staticContext.setHandler(static);
+
+//     val root = new ServletContextHandler(ServletContextHandler.SESSIONS)
+//     root.setContextPath("/")
+//     root.addServlet(new ServletHolder(new OozieDashboard(oozie)), "/*")
+//     root.setResourceBase("core/src/main/scalate/com/foursquare/oozie/dashboard")
+
+
+//     val handlers = new HandlerList()
+//     handlers.setHandlers(Array(staticContext, root))
+//     server.setHandler(handlers)
+
+//     server.start()
+//     server.join()
+//   }}
