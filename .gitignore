@@ -1,2 +1,3 @@
 src/main/resources/oozie.properties
 target
+sbtlib
