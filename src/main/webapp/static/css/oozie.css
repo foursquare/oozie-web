@@ -6,3 +6,7 @@ span.mini {
 div.mainstuff {
   padding-top:60px;
 }
+
+form.form-mini {
+  margin-bottom:0;
+}

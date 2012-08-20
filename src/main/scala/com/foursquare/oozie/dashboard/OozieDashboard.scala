@@ -96,6 +96,20 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
     }
   }
 
+  post("/coordinators/:id/:action/rerun") {
+    params.get("id") match {
+      case Some(id) => params.get("action") match {
+        case Some(action) => {
+          println("running %s for job %s" format(action, id))
+          oozie.reRunCoord(id, "action",action, false, false)
+          redirect("/coordinators/%s".format(id))
+        }
+        case _ => halt(404)
+      }
+      case _ => halt(404)
+    }
+  }
+
   get("/search") {
     params.get("q") match {
       case Some(query) => {

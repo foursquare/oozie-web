@@ -31,17 +31,33 @@
       <th>Date</th>
       <th>Status</th>  
       <th>External ID</th>
+      <th>Action</th>
     </tr>
   </thead>
   <tbody>
+    <% val rerun = List("FAILED", "KILLED", "TIMEDOUT") %>
     #for(action <- job.getActions.asScala.sortBy(_.getActionNumber).reverse)
       <tr>
         <td>${action.getActionNumber}</td>
         <td>${action.getCreatedTime.pp}</td>
         <td>${action.getStatus.toString}</td>
         <td><a href="/workflows/${action.getExternalId}">${action.getExternalId}</a></td>
+        <td>
+          #if (rerun.contains(action.getStatus.toString))
+          <form class="form-mini" action="/coordinators/${job.getId}/${action.getActionNumber}/rerun" method="POST">
+            <button class="btn btn-mini btn-primary" onClick="">Rerun</button>
+          </form>
+          #end
+        </td>
       </tr>
     #end
 
   </tbody>
 </table>
+
+<script type="text/javascript">
+  $('form').submit(function(){
+    $('button', this).attr('disabled', 'disabled');
+});
+
+</script>
