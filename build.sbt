@@ -16,6 +16,7 @@ libraryDependencies ++= Seq(
   "org.scalatra" %% "scalatra-specs2" % "2.0.4" % "test",
   "ch.qos.logback" % "logback-classic" % "1.0.0" % "runtime",
   "org.eclipse.jetty" % "jetty-webapp" % "7.6.0.v20120127" % "container",
+  "org.eclipse.jetty" % "jetty-webapp" % "7.6.0.v20120127",
   "javax.servlet" % "servlet-api" % "2.5" % "provided",
   "org.scalaj" %% "scalaj-collection" % "1.2",
   "com.yahoo.oozie" % "oozie-client" % "2.3.2-cdh3u3",
