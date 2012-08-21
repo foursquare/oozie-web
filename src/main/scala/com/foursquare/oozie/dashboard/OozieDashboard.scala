@@ -32,20 +32,9 @@ class PrettyDate(d: Date) {
 }
 
 class OozieDashboard() extends ScalatraServlet with ScalateSupport {
-
-
   val conf = ConfigFactory.load("oozie")
-
   var oozie = new OozieClient(conf.getString("oozieUrl"))
-
-
-  try { 
-    oozie.validateWSVersion()
-  } catch {
-    case e: Exception => {
-      throw e
-    }
-  }
+  oozie.validateWSVersion()
   
   before() {
     contentType = "text/html"
@@ -82,7 +71,7 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
 
   get("/coordinators") {
     val perPage = 1000
-    val jobs = oozie.getCoordJobsInfo("status=RUNNING;status=PREP", 0, 1000).asScala.toList
+    val jobs = oozie.getCoordJobsInfo(null, 0, 1000).asScala.toList
     ssp(view("coordinators/index.ssp"), "jobs" -> jobs)
   }
 

@@ -1,3 +1,5 @@
+import AssemblyKeys._ // put this at the top of the file
+
 organization := "com.foursquare"
 
 name := "oozie-web"
@@ -29,6 +31,11 @@ ivyXML := (
  <exclude module="jmxtools"/>
  <exclude module="jmxri"/>
  <exclude module="jms"/>
+ <exclude module="hadoop-core" />
  <exclude org="org.apache" name="hadoop-core"/>
 </dependencies>
 )
+
+assemblySettings
+
+net.virtualvoid.sbt.graph.Plugin.graphSettings

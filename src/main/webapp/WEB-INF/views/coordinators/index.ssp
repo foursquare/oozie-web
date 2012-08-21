@@ -3,7 +3,7 @@
 <% import com.foursquare.oozie.dashboard.Implicits._ %>
 <%@ var jobs: List[CoordinatorJob] %>
 
-<h2>Active Coordinators</h2>
+<h2>Coordinators</h2>
 <table class="table table-striped table-bordered">
   <thead>
     <tr>
