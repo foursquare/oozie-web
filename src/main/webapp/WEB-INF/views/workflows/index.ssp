@@ -7,11 +7,11 @@
 <ul class="pager">
   #if (page > 1)
   <li class="previous">
-    <a href="?page=${page - 1}">&larr; Older</a>
+    <a href="?page=${page - 1}">&larr; Newer</a>
   </li>
   #end
   <li class="next">
-    <a href="?page=${page+1}">Newer &rarr;</a>
+    <a href="?page=${page+1}">Older &rarr;</a>
   </li>
 </ul>
 <table class="table table-striped table-bordered">
