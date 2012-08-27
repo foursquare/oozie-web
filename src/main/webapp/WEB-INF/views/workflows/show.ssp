@@ -1,6 +1,7 @@
 <% import org.apache.oozie.client.WorkflowJob %>
 <% import com.foursquare.oozie.dashboard.Implicits._ %>
 <%@ var workflow: WorkflowJob %>
+<%@ var definition: String %>
 <h2>${workflow.getAppName} (${workflow.getId}) : ${workflow.getStatus}</h2>
 
 <table class="table table-striped table-bordered">
@@ -15,6 +16,18 @@
     </tr>
   </tbody>
 </table>
+<h3>Configuration <button class="btn btn-mini" id="config-button">show</button></h3>
+<div id="config">
+  <pre class="brush: xml">
+      ${workflow.getConf}
+  </pre>
+</div>
+<h3>Job Definition <button class="btn btn-mini" id="definition-button">show</button></h3>
+<div id="definition">
+  <pre class="brush: xml">
+    ${definition}  
+  </pre>
+</div>
 
 <h3>Sub Actions</h3>
 <table class="table table-striped table-bordered">
@@ -23,6 +36,7 @@
     <th>Name</th>
     <th>Start Time</th>
     <th>Status</th>
+    <th>External</th>
   </tr>  
   </thead>
   <tbody>
@@ -31,9 +45,27 @@
         <td>${action.getName} <span class="mini">${action.getId}</span></td>
         <td>${action.getStartTime.pp}</td>
         <td>${action.getStatus.toString} (=> ${action.getTransition})</td>
+        <td><a href="${action.getUrl}">${action.getExternalId}</a></td>
       </tr>
     #end  
   </tbody>
-  
-  
 </table>
+
+<script type="text/javascript">
+  function setupClick(name) {
+    $(name + "-button").click(function(e){
+      $(name).toggle();
+      if($(this).html() == "show") {
+        $(this).html("hide");
+      } else {
+        $(this).html("show");
+      }
+    });
+    $(name).hide();
+  }
+  $(document).ready(function(){
+    SyntaxHighlighter.all();
+    setupClick("#config");
+    setupClick("#definition");
+  });
+</script>

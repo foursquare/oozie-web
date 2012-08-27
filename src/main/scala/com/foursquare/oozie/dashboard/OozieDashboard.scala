@@ -3,7 +3,7 @@
 package com.foursquare.oozie.dashboard
 
 import com.typesafe.config.ConfigFactory
-import org.apache.oozie.client.OozieClient
+import org.apache.oozie.client.{OozieClient, WorkflowAction, WorkflowJob}
 // import org.eclipse.jetty.server.Server
 // import org.eclipse.jetty.servlet.{ServletContextHandler, ServletHolder}
 import org.scalatra.ScalatraServlet
@@ -18,7 +18,17 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 object Implicits {
-  implicit def prettyDate(d: Date): PrettyDate = new PrettyDate(d)
+    implicit def prettyDate(d: Date): PrettyDate = new PrettyDate(d)
+    implicit def sA(a: WorkflowAction): SuperAction = new SuperAction(a)
+  }
+
+class SuperAction(base: WorkflowAction) {
+  def getUrl = {
+    base.getExternalId match {
+      case str: String if (str.contains("oozie")) => "/workflows/%s" format(str)
+      case _ => base.getConsoleUrl
+    }
+  }
 }
 
 class PrettyDate(d: Date) {
@@ -35,6 +45,8 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
   val conf = ConfigFactory.load("oozie")
   var oozie = new OozieClient(conf.getString("oozieUrl"))
   oozie.validateWSVersion()
+
+  
   
   before() {
     contentType = "text/html"
@@ -63,7 +75,8 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
     params.get("id") match {
       case Some(id) => {
         val workflow = oozie.getJobInfo(id, 0, 1000)
-        ssp(view("workflows/show.ssp"), "workflow" -> workflow)
+        val definition = oozie.getJobDefinition(workflow.getId)
+        ssp(view("workflows/show.ssp"), "workflow" -> workflow, "definition" -> definition)
       }
       case _ => halt(404)
     }
@@ -79,7 +92,8 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
     params.get("id") match {
       case Some(id) => {
         val job = oozie.getCoordJobInfo(id, 0, 1000)
-        ssp(view("coordinators/show.ssp"), "job" -> job)
+        val definition = oozie.getJobDefinition(job.getId)
+        ssp(view("coordinators/show.ssp"), "job" -> job, "definition" -> definition)
       }
       case _ => halt(404)
     }

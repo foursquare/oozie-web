@@ -2,6 +2,7 @@
 <% import scalaj.collection.Imports._ %>
 <% import com.foursquare.oozie.dashboard.Implicits._ %>
 <%@ var job: CoordinatorJob %>
+<%@ var definition: String %>
 
 <h2>${job.getAppName}</h2>
 
@@ -21,6 +22,19 @@
       </tbody>
     </table>  
   </div>  
+</div>
+
+<h3>Configuration <button class="btn btn-mini" id="config-button">show</button></h3>
+<div id="config">
+  <pre class="brush: xml">
+      ${job.getConf}
+  </pre>
+</div>
+<h3>Job Definition <button class="btn btn-mini" id="definition-button">show</button></h3>
+<div id="definition">
+  <pre class="brush: xml">
+    ${definition}  
+  </pre>
 </div>
 
 <h3>Actions</h3>
@@ -59,5 +73,22 @@
   $('form').submit(function(){
     $('button', this).attr('disabled', 'disabled');
 });
+
+  function setupClick(name) {
+    $(name + "-button").click(function(e){
+      $(name).toggle();
+      if($(this).html() == "show") {
+        $(this).html("hide");
+      } else {
+        $(this).html("show");
+      }
+    });
+    $(name).hide();
+  }
+  $(document).ready(function(){
+    SyntaxHighlighter.all();
+    setupClick("#config");
+    setupClick("#definition");
+  });
 
 </script>
