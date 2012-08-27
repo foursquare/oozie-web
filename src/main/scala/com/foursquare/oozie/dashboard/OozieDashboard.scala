@@ -99,6 +99,18 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
     }
   }
 
+  get("/coordinators/:id/lastactionstatus") {
+    contentType = "text/plain"
+    params.get("id") match {
+      case Some(id) => {
+        val job = oozie.getCoordJobInfo(id, 0, 1000)
+        job.getActions.asScala.last.getStatus.toString
+      }
+      case _ => halt(404)
+    }
+    
+  }
+
   post("/coordinators/:id/:action/rerun") {
     params.get("id") match {
       case Some(id) => params.get("action") match {

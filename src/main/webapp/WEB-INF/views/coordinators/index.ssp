@@ -12,17 +12,32 @@
     <th>Last Action</th>
     <th>Status</th>
     <th>Author</th>
+    <th>Last Action Status</th>
   </tr>  
   </thead>
   <tbody>
     #for(workflow <- jobs)
       <tr>
-        <td><a href="/coordinators/${workflow.getId}">${workflow.getAppName}</a>  <span class="mini">(${workflow.getId})</span></td>
+        <td class="coord" id="${workflow.getId}"><a href="/coordinators/${workflow.getId}">${workflow.getAppName}</a>  <span class="mini">(${workflow.getId})</span></td>
         <td>${workflow.getUser}</td>
         <td>${workflow.getLastActionTime.pp}</td>
         <td>${workflow.getStatus.toString}</td>
         <td>${workflow.getUser}</td>
+        <td id="${workflow.getId}-laststatus">loading...</td>
       </tr>
     #end  
   </tbody>
 </table>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    $(".coord").each(function(i, obj){
+      var id = $(obj).attr("id");
+      $.get("/coordinators/" + id + "/lastactionstatus", function(data){
+        $("#" + id + "-laststatus").html(data);
+      });
+    });
+  });
+
+
+</script>
