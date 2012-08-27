@@ -17,13 +17,14 @@
   </thead>
   <tbody>
     #for(workflow <- jobs)
+    <% val isRunning = workflow.getStatus.toString == "RUNNING" %>
       <tr>
-        <td class="coord" id="${workflow.getId}"><a href="/coordinators/${workflow.getId}">${workflow.getAppName}</a>  <span class="mini">(${workflow.getId})</span></td>
+        <td class="${if (isRunning) "updateme" else "dontupdateme"}" id="${workflow.getId}"><a href="/coordinators/${workflow.getId}">${workflow.getAppName}</a>  <span class="mini">(${workflow.getId})</span></td>
         <td>${workflow.getUser}</td>
         <td>${workflow.getLastActionTime.pp}</td>
         <td>${workflow.getStatus.toString}</td>
         <td>${workflow.getUser}</td>
-        <td id="${workflow.getId}-laststatus">loading...</td>
+        <td id="${workflow.getId}-laststatus">${if (isRunning) "loading..." else ""}</td>
       </tr>
     #end  
   </tbody>
@@ -31,7 +32,7 @@
 
 <script type="text/javascript">
   $(document).ready(function(){
-    $(".coord").each(function(i, obj){
+    $(".updateme").each(function(i, obj){
       var id = $(obj).attr("id");
       $.get("/coordinators/" + id + "/lastactionstatus", function(data){
         $("#" + id + "-laststatus").html(data);
