@@ -2,26 +2,44 @@
 <% import com.foursquare.oozie.dashboard.Implicits._ %>
 <%@ var workflow: WorkflowJob %>
 <%@ var definition: String %>
-<h2>${workflow.getAppName} (${workflow.getId}) : ${workflow.getStatus}</h2>
+<h2>${workflow.getAppName}</h2>
+<div class="row">
+  <div class="span6">
+    <table class="table table-striped table-bordered">
+      <tbody>
+        <tr>
+          <td>Id</td>
+          <td>${workflow.getId}</td>
+        </tr>
+        <tr>
+          <td>Status</td>
+          <td>${workflow.getStatus}</td>
+        </tr>
+        <tr>
+          <td>Author</td>
+          <td>${workflow.getUser}</td>
+        </tr>
+        <tr>
+          <td>Started At</td>
+          <td>${workflow.getCreatedTime.pp}</td>
+        </tr>
+        <tr>
+          <td title="usually useless">Workflow Log</td>
+          <% val linkText = if(workflow.getStatus.toString == "FAILED") "there be dragons" else "all looks rosey" %>
+          <td><a href="/workflows/${workflow.getId}/log">${linkText}</a></td>
+        </tr>
+      </tbody>
+    </table>    
+  </div>
+</div>
 
-<table class="table table-striped table-bordered">
-  <tbody>
-    <tr>
-      <td>Author</td>
-      <td>${workflow.getUser}</td>
-    </tr>
-    <tr>
-      <td>Started At</td>
-      <td>${workflow.getCreatedTime.pp}</td>
-    </tr>
-  </tbody>
-</table>
 
 <h3>Sub Actions</h3>
 <table class="table table-striped table-bordered">
   <thead>
     <tr>
     <th>Name</th>
+    <th>Type</th>
     <th>Start Time</th>
     <th>Status</th>
     <th>External</th>
@@ -31,6 +49,7 @@
     #for(action <- workflow.getActions)
       <tr>
         <td>${action.getName} <span class="mini">${action.getId}</span></td>
+        <td>${action.getType.toString}</td>
         <td>${action.getStartTime.pp}</td>
         <td>${action.getStatus.toString} (=> ${action.getTransition})</td>
         <td><a href="${action.getUrl}">${action.getExternalId}</a></td>
