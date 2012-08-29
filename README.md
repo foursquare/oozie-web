@@ -42,3 +42,8 @@ SCREENSHOTS
 
 ![Screenshot 1](http://github.com/foursquare/oozie-web/raw/master/project/screenshots/screenshot1.png)
 ![Screenshot 2](http://github.com/foursquare/oozie-web/raw/master/project/screenshots/screenshot2.png)
+
+
+LICENSE
+------
+[Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
