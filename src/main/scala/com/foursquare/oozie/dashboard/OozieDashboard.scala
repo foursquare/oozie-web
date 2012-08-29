@@ -154,35 +154,3 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
 
 
 }
-
-// object JettyLauncher { 
-//   def main(args: Array[String]) {
-//     if (args.size < 2) {
-//       println.error("usage: ./oozieDash <port> <oozieUrl>")
-//       return
-//     }
-//     val port = args(0).toInt
-//     val oozie = args(1)
-//     val server = new Server(port)
-
-//     val static = new ResourceHandler()
-//     static.setResourceBase("core/src/main/scalate/com/foursquare/oozie/dashboard/static")
-//     static.setDirectoriesListed(false)
-
-//     val staticContext = new ContextHandler()
-//     staticContext.setContextPath("/static");
-//     staticContext.setHandler(static);
-
-//     val root = new ServletContextHandler(ServletContextHandler.SESSIONS)
-//     root.setContextPath("/")
-//     root.addServlet(new ServletHolder(new OozieDashboard(oozie)), "/*")
-//     root.setResourceBase("core/src/main/scalate/com/foursquare/oozie/dashboard")
-
-
-//     val handlers = new HandlerList()
-//     handlers.setHandlers(Array(staticContext, root))
-//     server.setHandler(handlers)
-
-//     server.start()
-//     server.join()
-//   }}
