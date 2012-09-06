@@ -32,7 +32,7 @@ class SuperAction(base: WorkflowAction) {
 }
 
 class PrettyDate(d: Date) {
-  val formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+  val formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z")
   def pp = {
     d match {
       case null => "<null>"
