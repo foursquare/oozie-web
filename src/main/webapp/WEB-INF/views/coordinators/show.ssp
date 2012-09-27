@@ -33,7 +33,8 @@
   <thead>
     <tr>
       <th>Action</th>
-      <th>Date</th>
+      <th>Action Time</th>
+      <th>Created On</th>
       <th>Status</th>  
       <th>External ID</th>
       <th>Action</th>
@@ -44,6 +45,7 @@
     #for(action <- job.getActions.asScala.sortBy(_.getActionNumber).reverse)
       <tr>
         <td>${action.getActionNumber}</td>
+        <td>${action.getNominalTime.pp}</td>
         <td>${action.getCreatedTime.pp}</td>
         <td>${action.getStatus.toString}</td>
         <td><a href="/workflows/${action.getExternalId}">${action.getExternalId}</a></td>
