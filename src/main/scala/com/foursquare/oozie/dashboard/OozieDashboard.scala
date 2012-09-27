@@ -4,16 +4,9 @@ package com.foursquare.oozie.dashboard
 
 import com.typesafe.config.ConfigFactory
 import org.apache.oozie.client.{OozieClient, WorkflowAction, WorkflowJob}
-// import org.eclipse.jetty.server.Server
-// import org.eclipse.jetty.servlet.{ServletContextHandler, ServletHolder}
 import org.scalatra.ScalatraServlet
 import org.scalatra.scalate.ScalateSupport
 import scalaj.collection.Imports._
-// import org.eclipse.jetty.server.handler.ContextHandler;
-// import org.eclipse.jetty.server.handler.HandlerList;
-// import org.eclipse.jetty.server.handler.ResourceHandler;
-// import org.eclipse.jetty.server.nio.SelectChannelConnector;
-// import org.eclipse.jetty.webapp.WebAppContext;
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -91,7 +84,6 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
       case _ => halt(404)
     }
   }
-
 
   get("/coordinators") {
     val perPage = 1000

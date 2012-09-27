@@ -1,3 +1,5 @@
+// Copyright 2012 Foursquare Labs Inc. All Rights Reserved.
+
 package com.foursquare.oozie.dashboard
 
 import org.eclipse.jetty.server.Server
