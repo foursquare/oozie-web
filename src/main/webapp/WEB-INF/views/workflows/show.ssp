@@ -2,6 +2,7 @@
 <% import com.foursquare.oozie.dashboard.Implicits._ %>
 <%@ var workflow: WorkflowJob %>
 <%@ var definition: String %>
+<%@ val props: List[String] %>
 <h2>${workflow.getAppName}</h2>
 <div class="row">
   <div class="span6">
@@ -69,6 +70,15 @@
       ${workflow.getConf}
   </pre>
 </div>
+<h3>User Props (beta)</h3>
+<div>
+  <p>If you want to re-run, I think these are the user-props:</p>
+  #for(prop <- props)
+    ${prop}
+    <br />
+  #end  
+</div>
+
 <script type="text/javascript">
   $(document).ready(function(){
     SyntaxHighlighter.all();

@@ -6,6 +6,7 @@ import com.typesafe.config.ConfigFactory
 import org.apache.oozie.client.{OozieClient, WorkflowAction, WorkflowJob}
 import org.scalatra.ScalatraServlet
 import org.scalatra.scalate.ScalateSupport
+import scala.xml.XML
 import scalaj.collection.Imports._
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -69,7 +70,16 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
       case Some(id) => {
         val workflow = oozie.getJobInfo(id, 0, 1000)
         val definition = oozie.getJobDefinition(workflow.getId)
-        ssp(view("workflows/show.ssp"), "workflow" -> workflow, "definition" -> definition)
+        val xml = XML.loadString(workflow.getConf)
+        val userProps: List[String] = (xml \\ "property").map{node =>
+          val name = (node \\ "name").text
+          val value = (node \\ "value").text.replaceAll("\n", " ")
+          name match {
+            case s: String if (!s.contains(".")) => Some("%s=%s".format(s, value))
+            case _ => None
+          }
+        }.flatten.toList
+        ssp(view("workflows/show.ssp"), "workflow" -> workflow, "definition" -> definition, "props" -> userProps)
       }
       case _ => halt(404)
     }
