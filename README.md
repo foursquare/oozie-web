@@ -36,7 +36,7 @@ To build the jar:
 
 To Run the jar:
 
-java jar target/oozie-web.jar 8080
+java -jar target/oozie-web-assembly-<VERSION>.jar 8080
 
 This requires the files in src/main/webapp to still be on the filesystem 
 for the jar to find, which isn't ideal, but works for now. 
