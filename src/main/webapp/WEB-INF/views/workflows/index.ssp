@@ -2,16 +2,17 @@
 <% import com.foursquare.oozie.dashboard.Implicits._ %>
 <%@ var workflows: List[WorkflowJob] %>
 <%@ var page: Int = 1 %>
+<%@ val filterUri: String %>
 <h2>Workflows (page ${page})</h2>
 
 <ul class="pager">
   #if (page > 1)
   <li class="previous">
-    <a href="?page=${page - 1}">&larr; Newer</a>
+    <a href="?${filterUri}page=${page - 1}">&larr; Newer</a>
   </li>
   #end
   <li class="next">
-    <a href="?page=${page+1}">Older &rarr;</a>
+    <a href="?${filterUri}page=${page + 1}">Older &rarr;</a>
   </li>
 </ul>
 <table class="table table-striped table-bordered">
@@ -38,10 +39,10 @@
 <ul class="pager">
   #if (page > 1)
   <li class="previous">
-    <a href="?page=${page - 1}">&larr; Newer</a>
+    <a href="?${filterUri}page=${page - 1}">&larr; Newer</a>
   </li>
   #end
   <li class="next">
-    <a href="?page=${page+1}">Older &rarr;</a>
+    <a href="?${filterUri}page=${page + 1}">Older &rarr;</a>
   </li>
 </ul>
