@@ -58,9 +58,8 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
   get("/workflows") {
     val perPage = 50
     val offset = params.get("page").map(_.toInt).getOrElse(1)
-    val statusFilter = params.get("status").map(s => "status=%s".format(s.toUpperCase)).getOrElse("")
+    val filter = params.get("status").map(s => "status=%s".format(s.toUpperCase)).getOrElse("")
     val start = (offset-1) * perPage
-    val filter = statusFilter
     val jobs = oozie.getJobsInfo(filter, start, perPage).asScala.toList
     val filterUri = if (filter.nonEmpty) { filter + "&"} else { "" }
     ssp(view("workflows/index.ssp"), "workflows" -> jobs, "page" -> offset, "filterUri" -> filterUri)
