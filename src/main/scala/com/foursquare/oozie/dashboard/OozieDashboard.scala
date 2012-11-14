@@ -3,13 +3,13 @@
 package com.foursquare.oozie.dashboard
 
 import com.typesafe.config.ConfigFactory
-import org.apache.oozie.client.{OozieClient, WorkflowAction, WorkflowJob}
+import java.text.SimpleDateFormat
+import java.util.Date
+import org.apache.oozie.client.{WorkflowAction, OozieClient}
 import org.scalatra.ScalatraServlet
 import org.scalatra.scalate.ScalateSupport
 import scala.xml.XML
 import scalaj.collection.Imports._
-import java.text.SimpleDateFormat
-import java.util.Date
 
 object Implicits {
     implicit def prettyDate(d: Date): PrettyDate = new PrettyDate(d)
@@ -30,7 +30,7 @@ class PrettyDate(d: Date) {
   def pp = {
     d match {
       case null => "<null>"
-      case date => formatter.format(d);    
+      case date => formatter.format(d)
     }
   }
 }
@@ -40,15 +40,15 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
   var oozie = new OozieClient(conf.getString("oozieUrl"))
   oozie.validateWSVersion()
 
-  
-  
+
+
   before() {
     contentType = "text/html"
   }
 
   def view(name: String) = "WEB-INF/views/%s" format(name)
 
-  get("/") {    
+  get("/") {
     val filter = "status=RUNNING;status=PREP"
     val workflows = oozie.getJobsInfo(filter, 0, 1000).asScala.toList
     val coordinators = oozie.getCoordJobsInfo(filter, 0, 1000).asScala.toList
@@ -104,7 +104,7 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
   get("/coordinators/:id") {
     params.get("id") match {
       case Some(id) => {
-        val job = oozie.getCoordJobInfo(id, 0, 1000)
+        val job = oozie.getCoordJobInfo(id, null, 0, 1000)
         val definition = oozie.getJobDefinition(job.getId)
         ssp(view("coordinators/show.ssp"), "job" -> job, "definition" -> definition)
       }
@@ -116,12 +116,16 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
     contentType = "text/plain"
     params.get("id") match {
       case Some(id) => {
-        val job = oozie.getCoordJobInfo(id, 0, 1000)
+        val job = oozie.getCoordJobInfo(id, null, 0, 1000)
+        job.getActions.asScala.lastOption match {
+          case Some(last) => last.getStatus.toString
+          case None => halt(404)
+        }
         job.getActions.asScala.last.getStatus.toString
       }
-      case _ => halt(404)
+      case None => halt(404)
     }
-    
+
   }
 
   post("/coordinators/:id/:action/rerun") {
@@ -143,9 +147,9 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
       case Some(query) => {
         val workflows = oozie.getJobsInfo(null, 0, 500).asScala.filter(_.getAppName.contains(query))
         val coordinators = oozie.getCoordJobsInfo(null, 0, 500).asScala.filter(_.getAppName.contains(query))
-        ssp(view("index.ssp"), 
-          "workflows" -> workflows, 
-          "coordinators" -> coordinators, 
+        ssp(view("index.ssp"),
+          "workflows" -> workflows,
+          "coordinators" -> coordinators,
           "title" -> "Jobs containing '%s'".format(query),
           "viewMore" -> false
           )
