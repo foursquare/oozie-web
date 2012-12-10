@@ -105,6 +105,7 @@ function findLayers(ordered, ymax, m) {
     var depth = {};
     var deepest = -1;
     var layers = Array();
+    var max_width=25;
     for(var i=0;i<ordered.length;i++){
         var node = ordered[i];
         node['marked'] = false; // unmark for next step; leaky
@@ -116,6 +117,9 @@ function findLayers(ordered, ymax, m) {
             }            
         }        
         depth[node.name] = 1 + max; // 0 for start
+        while(layers[depth[node.name]] && layers[depth[node.name]].length > max_width) {
+            depth[node.name] += 1;
+        }
         deepest = (depth[node.name] > deepest) ? depth[node.name] : deepest;
         if(layers.length <= depth[node.name]) {
             layers.push(Array(node));
@@ -126,6 +130,7 @@ function findLayers(ordered, ymax, m) {
     for(var i=0;i<ordered.length;i++){
         var node = ordered[i];
         node.y = m +  ymax * ( depth[node.name] + 0.0) / deepest;
+        node.constant_y = node.y;
     }
     return { 'depthtable' : depth, 'layers' : layers, 'nodes' : ordered };
 }
@@ -147,7 +152,7 @@ function findPaths( layered, xmax , m){
             occupied[depth] ++;
         }
         node.x = m + xmax * ( occupied[depth] + 0.0) / (numAtLevel + 1);        
-        node['fixed'] = true;
+        node['fixed'] = false;
     }
     return ordered;       
 }
@@ -174,8 +179,9 @@ function node(name) {
 
 
 function makeGraph(wfdef) {
-    var w = 1000, h = 1500, m=100;
     var dag = buildDag(wfdef);
+    var w = 1000, m=100;
+    var h = 150 * Math.sqrt(dag.edges.length);
     var linearized = linearize( dag );
     var layered = findLayers(linearized, h, m);
     linearized = findPaths(layered, w, m);
@@ -191,14 +197,16 @@ function makeGraph(wfdef) {
 
     var force = d3.layout.force()
         .size([w, h])
-        .linkDistance(1)
+        .linkDistance(2.0 * h/layered.layers.length)
         .charge(-1000)
-        .gravity(0.1)
-        .theta(0.8)
+        .gravity(0.3)
+        .theta(0.1)
+        .linkStrength(0.3)
         .on("tick", tick)
         .nodes(d3.values(nodes))
         .links(edges) 
         .start();
+  
 
     // Per-type markers, as they don't inherit styles.
     svg.append("svg:defs").selectAll("marker")
@@ -231,7 +239,6 @@ function makeGraph(wfdef) {
         .data(force.nodes())
         .enter().append("svg:circle")
         .attr("r", 6)
-        .call(force.drag)
         .style("fill", "gray");
     
     var text = svg.append("svg:g").selectAll("g")
@@ -239,47 +246,59 @@ function makeGraph(wfdef) {
         .enter().append("svg:g");
     
     // A copy of the text with a thick white stroke for legibility.
-/*
     text.append("svg:text")
         .attr("x", 8)
         .attr("y", ".31em")
         .attr("class", "shadow")
-        .text(function(d) { return d.name; });*/
+        .text(function(d) { return d.name; })
+        .style("stroke", "white")
+        .style("stroke-width", "3px")
+        .style("opacity", "0.8")
+        .attr("text-anchor", "middle")
+        .attr("transform", "rotate(-30)");
     
     text.append("svg:text")
         .attr("x", 8)
         .attr("y", ".31em")
         .attr("text-anchor", "middle")
         .text(function(d) { return d.name; })
-        .attr("transform", "rotate(-45)");
+        .attr("transform", "rotate(-30)");
     
-    // Use elliptical arc path segments to doubly-encode directionality.
-    /* function tick() {
-        link.attr("x1", function(d) { return d.source.x; })
-            .attr("y1", function(d) { return d.source.y; })
-            .attr("x2", function(d) { return d.target.x; })
-            .attr("y2", function(d) { return d.target.y; });
-        
-        node.attr("cx", function(d) { return d.x; })
-            .attr("cy", function(d) { return d.y; });
-    } */
-    
-    function tick() {
+    var n= 500;
+    for (var i = 0; i < n; ++i) force.tick();
+    force.stop();
+
+   function tick() {
         path.attr("d", function(d) {
-            var dx = d.target.x - d.source.x,
-            dy = d.target.y - d.source.y,
-            dr = 0;
+            var dx = d.target.x - d.source.x;
+            d.source.y = d.source.constant_y;
+            d.target.y = d.target.constant_y;
+            var dy = d.target.y - d.source.y;            
+            var dr = 0;
             return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
         });
-        
-        circle.attr("transform", function(d) {
-            return "translate(" + d.x + "," + d.y + ")";
-        });
+
+       circle.attr("cx", function(d) { 
+           return d.x; 
+       })
+           .attr("cy", function(d){ 
+               d.py = d.constant_y; 
+               d.y = d.constant_y;
+               return d.constant_y; 
+           });
+
+ 
+       
+/*       circle.attr("transform", function(d) {
+           d.y = d.py;
+           return "translate(" + d.x + "," + d.py + ")";
+        }); */
         
         text.attr("transform", function(d) {
-            return "translate(" + d.x + "," + d.y + ")";
+            d.y = d.py;
+            return "translate(" + d.x + "," + d.py + ")";
         });
-    }
-
+        
+    }    
     
 }
