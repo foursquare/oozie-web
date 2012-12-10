@@ -71,13 +71,22 @@ ${workflow.getConf}
   </pre>
 </div>
 <h3>User Props (beta)</h3>
-<div>
+<div id="user-props">
   <p>If you want to re-run, I think these are the user-props:</p>
   #for(prop <- props)
     ${prop}
     <br />
   #end
 </div>
+<h3>Graph&nbsp;<button id="reveal-graph">reveal</button></h3>
+<div id="graph">
+        
+</div>
+<script type="text/javascript">
+
+      $(document).ready(loadData());
+
+</script >
 
 <script type="text/javascript">
   $(document).ready(function(){

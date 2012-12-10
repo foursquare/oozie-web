@@ -34,3 +34,19 @@ h3 {
 .SUCCEEDED {
   color: green;
 }
+
+#config {
+  padding-bottom: 20px;
+}
+
+#user-props {
+  padding-bottom: 20px;
+}
+
+#graph {
+  display: none;
+}
+
+#reveal-graph {
+  font-size: 0.8em;
+}
