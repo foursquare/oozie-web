@@ -18,8 +18,8 @@ function buildDag(wfdef) {
     var elems = wfdef.childNodes[0].childNodes;
     var nodes = {};
     var edges = Array();
-    var createEdge = function(from, to){
-        edges.push( edge( from, to) );
+    var createEdge = function(from, to, kind){
+        edges.push( edge( from, to, kind) );
         from.out.push(to);
         to.in.push(from);
     }
@@ -40,6 +40,9 @@ function buildDag(wfdef) {
           nodes["start"] = node("start");
         } else if(c.tagName == "end") {
             nodes["end"] = node("end");
+        } else if (c.tagName == "kill") {
+            var name = c.getAttribute("name");
+            nodes[name] = node(name);
         }
     }
     for(var i=0;i<elems.length;i++){
@@ -47,22 +50,27 @@ function buildDag(wfdef) {
       if(c.nodeName == "#text") {
           continue;
       } else if(c.tagName=="start"){
-          createEdge( nodes["start"], nodes[c.getAttribute("to")]);          
+          createEdge( nodes["start"], nodes[c.getAttribute("to")], 'ok');          
       } else if(c.tagName == "action"){
           var name = c.getAttribute("name");
           var ok = c.getElementsByTagName("ok")[0]; // actions must have exactly 1 ok tag, I think
           var next = ok.getAttribute("to");
-          createEdge( nodes[name], nodes[next] );
+          createEdge( nodes[name], nodes[next], 'ok' );
+          var error = c.getElementsByTagName("error")[0];
+          var afterError = error.getAttribute("to");
+          if(afterError != next){
+              createEdge( nodes[name], nodes[afterError], 'error');
+          }
       } else if(c.tagName == "fork") {
           var name = c.getAttribute("name");
           var paths = c.getElementsByTagName("path");
           for(var j=0;j<paths.length;j++){
             var path = paths[j];
-            createEdge(nodes[name], nodes[path.getAttribute("start")]);
+            createEdge(nodes[name], nodes[path.getAttribute("start")], 'ok');
           }
       } else if(c.tagName == "join") {
           var name = c.getAttribute("name");
-          createEdge(nodes[name], nodes[c.getAttribute("to")]);
+          createEdge(nodes[name], nodes[c.getAttribute("to")], 'ok');
       }     
     }
     return newGraph(nodes, edges);    
@@ -144,7 +152,7 @@ function findPaths( layered, xmax , m){
     return ordered;       
 }
 
-function edge(from, to){
+function edge(from, to, kind){
     var e = Object();
     if(! from || ! to){
         throw "hit an undefined or null!"
@@ -152,6 +160,7 @@ function edge(from, to){
     e['source'] = from;
     e['target'] = to;
     e['weight'] = 1.0;
+    e['kind'] = kind;
     return e;
 }
 
@@ -209,7 +218,13 @@ function makeGraph(wfdef) {
         .enter().append("svg:path")
         .attr("class", function(d) { return "link " + d.type; })
         .attr("marker-end", function(d) { return "url(#" + d.type + ")"; })
-        .style("stroke", "gray")
+        .style("stroke", function(d ) {
+            if(d.kind == "ok") {
+                return "green";
+            } else {
+                return "red"
+            }
+        })
         .style("fill", "none");
     
     var circle = svg.append("svg:g").selectAll("circle")
