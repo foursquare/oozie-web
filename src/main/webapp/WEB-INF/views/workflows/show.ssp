@@ -78,6 +78,15 @@
     <br />
   #end  
 </div>
+<h3>Graph</h3>
+<div id="graph">
+        
+</div>
+<script type="text/javascript">
+
+      $(document).ready(loadData());
+
+</script >
 
 <script type="text/javascript">
   $(document).ready(function(){
