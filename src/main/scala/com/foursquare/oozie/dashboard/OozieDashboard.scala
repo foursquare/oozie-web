@@ -97,8 +97,13 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
 
   get("/coordinators") {
     val perPage = 1000
-    val jobs = oozie.getCoordJobsInfo(null, 0, 1000).asScala.toList
-    ssp(view("coordinators/index.ssp"), "jobs" -> jobs)
+
+    val status = params.get("status") match {
+      case Some(str: String) => "status=%s".format(str.toUpperCase)
+      case _ => null
+    }
+    val jobs = oozie.getCoordJobsInfo(status, 0, 1000).asScala.toList
+    ssp(view("coordinators/index.ssp"), "jobs" -> jobs, "status" -> params.get("status").getOrElse("all") )
   }
 
   get("/coordinators/:id") {
@@ -117,7 +122,7 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
     params.get("id") match {
       case Some(id) => {
         val job = oozie.getCoordJobInfo(id, 0, 1000)
-        job.getActions.asScala.last.getStatus.toString
+        job.getActions.asScala.reverse.slice(0, 3).map(_.getStatus.toString).mkString(",")
       }
       case _ => halt(404)
     }

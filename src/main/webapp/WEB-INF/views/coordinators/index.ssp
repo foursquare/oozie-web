@@ -2,8 +2,12 @@
 <% import scalaj.collection.Imports._ %>
 <% import com.foursquare.oozie.dashboard.Implicits._ %>
 <%@ var jobs: List[CoordinatorJob] %>
-
+<%@ val status: String %>
 <h2>Coordinators</h2>
+<ul class="nav-pills nav">
+  <li class="pill" id="pill-all"><a href="/coordinators">all</a></li>
+  <li class="pill" id="pill-running"><a href="/coordinators?status=running">running</a></li>
+</ul>
 <table class="table table-striped table-bordered">
   <thead>
     <tr>
@@ -12,31 +16,54 @@
     <th>Last Action</th>
     <th>Status</th>
     <th>Author</th>
-    <th>Last Action Status</th>
+    <th>Last Action</th>
+    <th>Action -1</th>
+    <th>Action -2</th>
   </tr>  
   </thead>
   <tbody>
     #for(workflow <- jobs)
     <% val isRunning = workflow.getStatus.toString == "RUNNING" %>
       <tr>
-        <td class="${if (isRunning) "updateme" else "dontupdateme"}" id="${workflow.getId}"><a href="/coordinators/${workflow.getId}">${workflow.getAppName}</a>  <span class="mini">(${workflow.getId})</span></td>
+        <td class="${if (isRunning) "updateme" else "dontupdateme"}" id="${workflow.getId}"><a href="/coordinators/${workflow.getId}">${workflow.getAppName}</a></td>
         <td>${workflow.getUser}</td>
         <td>${workflow.getLastActionTime.pp}</td>
         <td>${workflow.getStatus.toString}</td>
         <td>${workflow.getUser}</td>
-        <td id="${workflow.getId}-laststatus">${if (isRunning) "loading..." else ""}</td>
+        <td class="actions" id="${workflow.getId}-action0">${if (isRunning) "loading..." else ""}</td>
+        <td class="actions" id="${workflow.getId}-action1"></td>
+        <td class="actions" id="${workflow.getId}-action2"></td>
       </tr>
     #end  
   </tbody>
 </table>
 
 <script type="text/javascript">
+  var statusName = 'pill-<%=status%>';
   $(document).ready(function(){
     $(".updateme").each(function(i, obj){
       var id = $(obj).attr("id");
       $.get("/coordinators/" + id + "/lastactionstatus", function(data){
-        $("#" + id + "-laststatus").html(data);
+        var statuses = data.split(",");
+        for(var i = 0; i < statuses.length; i++){
+          var elementId = "#" + id + "-action" + i;
+          $(elementId).html(statuses[i]);
+
+          if (statuses[i] == "FAILED" || statuses[i] == "KILLED") {
+            $(elementId).attr("class", $(elementId).attr("class") + " bad");
+
+          } else if (statuses[i] == "SUCCEEDED") {
+            $(elementId).attr("class", $(elementId).attr("class") + " good");
+          } else {
+            $(elementId).attr("class", $(elementId).attr("class") + " neutral");
+          }
+        }
       });
+    });
+    $('li.pill').each(function(i, obj){
+      if (statusName == $(obj).attr("id")) {
+        $(obj).attr('class', 'active');
+      }
     });
   });
 
