@@ -23,7 +23,7 @@
     <form action="/workflows" method="get">
       
     <tr>
-      <th><input type="text" value="" name="name" value="${nameValue}" placeholder="name equals..."></th>
+      <th><input type="text"  name="name" value="${nameValue}" placeholder="name equals..."></th>
       <th><input type="text"  name="user" value="${userValue}" placeholder="user equals..."></th>
       <th><input type="text"  name="status" value="${statusValue}" placeholder="status equals..."></th>
       <th><button class="btn">search</button></th>
