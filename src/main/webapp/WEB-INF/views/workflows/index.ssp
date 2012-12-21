@@ -20,7 +20,7 @@
 </ul>
 <table class="table table-striped table-bordered">
   
-    <form action="/workflows" method="get">
+    <form id="filterForm" action="/workflows" method="get">
       
     <tr>
       <th><input type="text"  name="name" value="${nameValue}" placeholder="name equals..."></th>
