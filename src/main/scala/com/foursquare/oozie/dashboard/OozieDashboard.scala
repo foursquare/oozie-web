@@ -154,8 +154,9 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
     contentType = "text/plain"
     params.get("id") match {
       case Some(id) => {
+        // TODO (rathbone): fix all getCoordJobInfo calls to return *all* actions, not just the first 1000
         val job = oozie.getCoordJobInfo(id, 0, 1000)
-        job.getActions.asScala.reverse.slice(0, 3).map(_.getStatus.toString).mkString(",")
+        job.getActions.asScala.sortBy(_.getId).reverse.slice(0, 3).map(_.getStatus.toString).mkString(",")
       }
       case _ => halt(404)
     }
