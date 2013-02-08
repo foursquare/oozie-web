@@ -131,7 +131,7 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
   get("/coordinators/:id") {
     params.get("id") match {
       case Some(id) => {
-        val job = oozie.getCoordJobInfo(id, 0, 1000)
+        val job = oozie.getCoordJobInfo(id, "", 0, 1000)
         val definition = oozie.getJobDefinition(job.getId)
         val runTimes = job.getActions.asScala.map{action =>
           (
@@ -155,7 +155,7 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
     params.get("id") match {
       case Some(id) => {
         // TODO (rathbone): fix all getCoordJobInfo calls to return *all* actions, not just the first 1000
-        val job = oozie.getCoordJobInfo(id, 0, 1000)
+        val job = oozie.getCoordJobInfo(id, "", 0, 1000)
         
         job.getActions.asScala.sortBy(_.getActionNumber).reverse.slice(0, 3).map(_.getStatus.toString).mkString(",")
       }

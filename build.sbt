@@ -19,7 +19,7 @@ libraryDependencies ++= Seq(
   "org.eclipse.jetty" % "jetty-webapp" % "7.6.0.v20120127",
   "javax.servlet" % "servlet-api" % "2.5" % "provided",
   "org.scalaj" %% "scalaj-collection" % "1.2",
-  "com.yahoo.oozie" % "oozie-client" % "2.3.2-cdh3u3",
+  "org.apache.oozie" % "oozie-client" % "3.2.0-cdh4.1.3",
   "com.typesafe" % "config" % "0.5.0"
 )
 
