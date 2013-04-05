@@ -3,7 +3,7 @@
 <% import com.foursquare.oozie.dashboard.Implicits._ %>
 <%@ var job: CoordinatorJob %>
 <%@ var definition: String %>
-
+<%@ val runTimes: List[Tuple2[Int, Long]] %>
 <h2>${job.getAppName}</h2>
 
 <div class="row">
@@ -25,7 +25,11 @@
         </tr>
       </tbody>
     </table>  
-  </div>  
+  </div>
+  <div class="span6">
+    <h3>Runtime History</h3>
+    <div id="runtimechart"></div>
+  </div>
 </div>
 
 <h3>Actions</h3>
@@ -78,10 +82,13 @@
 <script type="text/javascript">
   $('form').submit(function(){
     $('button', this).attr('disabled', 'disabled');
-});
+  });
 
   $(document).ready(function(){
     SyntaxHighlighter.all();
+    var dataset = [ <%=runTimes.map{case(a,b) => "[%d,%d]".format(a,b)}.mkString(",\n")%> ];
+    console.log("dataset: " + dataset.length);
+    $.plot($("#runtimechart"), [{"data": dataset, "hoverable": true, "clickable": true, "label": "time in minutes"}]);
   });
 
 </script>

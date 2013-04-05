@@ -10,3 +10,22 @@ div.mainstuff {
 form.form-mini {
   margin-bottom:0;
 }
+
+td.actions {
+
+}
+.bad {
+  background-color: #F2DEDE !important;
+}
+
+.good {
+  background-color: #DFF0D8 !important;
+}
+
+.neutral {
+  background-color: #F6F7DA !important;
+}
+
+div#runtimechart {
+  height:150px;
+}

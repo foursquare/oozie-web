@@ -56,13 +56,31 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
   }
 
   get("/workflows") {
+    val name = getNonBlank(params, "name").map{s => "name=%s".format(s)}
+    val user = getNonBlank(params, "user").map{u => "user=%s".format(u)}
+    val status = getNonBlank(params, "status").map{s => "status=%s".format(s.toUpperCase)}
+    val filterText = List(name, user, status).flatten match {
+      case Nil => null
+      case other => other.mkString(";")
+    }
+
     val perPage = 50
     val offset = params.get("page").map(_.toInt).getOrElse(1)
-    val filter = params.get("status").map(s => "status=%s".format(s.toUpperCase)).getOrElse("")
     val start = (offset-1) * perPage
-    val jobs = oozie.getJobsInfo(filter, start, perPage).asScala.toList
-    val filterUri = if (filter.nonEmpty) { filter + "&"} else { "" }
-    ssp(view("workflows/index.ssp"), "workflows" -> jobs, "page" -> offset, "filterUri" -> filterUri)
+    val jobs = oozie.getJobsInfo(filterText, start, perPage).asScala.toList
+    val filterUri = List(name, user, status).flatten match {
+      case Nil => ""
+      case other => other.mkString("&") + "&"
+    }
+    
+    ssp(view("workflows/index.ssp"), 
+      "workflows" -> jobs, 
+      "page" -> offset, 
+      "filterUri" -> filterUri, 
+      "nameValue" -> getNonBlank(params, "name"),
+      "userValue" -> getNonBlank(params, "user"),
+      "statusValue" -> getNonBlank(params, "status")
+      ) 
   }
 
   get("/workflows/:id") {
@@ -107,16 +125,36 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
 
   get("/coordinators") {
     val perPage = 1000
-    val jobs = oozie.getCoordJobsInfo(null, 0, 1000).asScala.toList
-    ssp(view("coordinators/index.ssp"), "jobs" -> jobs)
+
+    val status = params.get("status") match {
+      case Some(str: String) => "status=%s".format(str.toUpperCase)
+      case _ => null
+    }
+    val jobs = oozie.getCoordJobsInfo(status, 0, 1000).asScala.toList
+    ssp(
+      view("coordinators/index.ssp"), 
+      "jobs" -> jobs,
+      "status" -> params.get("status").getOrElse("all") 
+      )
   }
 
   get("/coordinators/:id") {
     params.get("id") match {
       case Some(id) => {
-        val job = oozie.getCoordJobInfo(id, 0, 1000)
+        val job = oozie.getCoordJobInfo(id, "", 0, 1000)
         val definition = oozie.getJobDefinition(job.getId)
-        ssp(view("coordinators/show.ssp"), "job" -> job, "definition" -> definition)
+        val runTimes = job.getActions.asScala.map{action =>
+          (
+            action.getActionNumber, 
+            (action.getLastModifiedTime.getTime - action.getCreatedTime.getTime) / 1000 / 60
+          )
+        }
+        ssp(
+          view("coordinators/show.ssp"), 
+          "job" -> job, 
+          "definition" -> definition,
+          "runTimes" -> runTimes.sortBy(_._1)
+          )
       }
       case _ => halt(404)
     }
@@ -126,8 +164,10 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
     contentType = "text/plain"
     params.get("id") match {
       case Some(id) => {
-        val job = oozie.getCoordJobInfo(id, 0, 1000)
-        job.getActions.asScala.last.getStatus.toString
+        // TODO (rathbone): fix all getCoordJobInfo calls to return *all* actions, not just the first 1000
+        val job = oozie.getCoordJobInfo(id, "", 0, 1000)
+        
+        job.getActions.asScala.sortBy(_.getActionNumber).reverse.slice(0, 3).map(_.getStatus.toString).mkString(",")
       }
       case _ => halt(404)
     }
@@ -148,20 +188,33 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
     }
   }
 
+  private def getNonBlank(map: Map[String, String], key: String): Option[String] = {
+    map.get(key) match {
+      case Some("") => None
+      case Some(other) => Some(other)
+      case _ => None
+    }
+    
+  }
+
   get("/search") {
-    params.get("q") match {
+    
+    val workflows = oozie.getJobsInfo(null, 0, 500).asScala.toList
+    val coordinators = oozie.getCoordJobsInfo(null, 0, 500).asScala.toList
+
+    val (wf, coords) = params.get("q") match {
       case Some(query) => {
-        val workflows = oozie.getJobsInfo(null, 0, 500).asScala.filter(_.getAppName.contains(query))
-        val coordinators = oozie.getCoordJobsInfo(null, 0, 500).asScala.filter(_.getAppName.contains(query))
-        ssp(view("index.ssp"), 
-          "workflows" -> workflows, 
-          "coordinators" -> coordinators, 
-          "title" -> "Jobs containing '%s'".format(query),
+        (workflows.filter(_.getAppName.contains(query)),
+        coordinators.filter(_.getAppName.contains(query)))
+      }
+      case _ => (workflows, coordinators)
+    }
+    ssp(view("index.ssp"), 
+          "workflows" -> wf, 
+          "coordinators" -> coords, 
+          "title" -> "search results",
           "viewMore" -> false
           )
-      }
-      case _ => redirect("/")
-    }
   }
 
 

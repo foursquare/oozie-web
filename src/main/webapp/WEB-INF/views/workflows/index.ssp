@@ -3,6 +3,9 @@
 <%@ var workflows: List[WorkflowJob] %>
 <%@ var page: Int = 1 %>
 <%@ val filterUri: String %>
+<%@ val nameValue: Option[String] %>
+<%@ val userValue: Option[String] %>
+<%@ val statusValue: Option[String] %>
 <h2>Workflows (page ${page})</h2>
 
 <ul class="pager">
@@ -16,24 +19,32 @@
   </li>
 </ul>
 <table class="table table-striped table-bordered">
-  <thead>
+  
+    <form id="filterForm" action="/workflows" method="get">
+      
+    <tr>
+      <th><input type="text"  name="name" value="${nameValue}" placeholder="name equals..."></th>
+      <th><input type="text"  name="user" value="${userValue}" placeholder="user equals..."></th>
+      <th><input type="text"  name="status" value="${statusValue}" placeholder="status equals..."></th>
+      <th><button class="btn">search</button></th>
+    </tr>
+    </form>
     <tr>
     <th>Name</th>
-    <th>Created</th>
     <th>User</th>
     <th>Status</th>
+    <th>Created</th>
   </tr>  
-  </thead>
-  <tbody>
+  
     #for(workflow <- workflows)
       <tr>
         <td><a href="/workflows/${workflow.getId}">${workflow.getAppName}</a>  <span class="mini">(${workflow.getId})</span></td>
-        <td>${workflow.getCreatedTime.pp}</td>
         <td>${workflow.getUser}</td>
         <td>${workflow.getStatus.toString}</td>
+        <td>${workflow.getCreatedTime.pp}</td>
       </tr>
     #end  
-  </tbody>
+  
 </table>
 
 <ul class="pager">
