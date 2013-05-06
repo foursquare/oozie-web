@@ -16,15 +16,19 @@
           <td>${job.getId}</td>
         </tr>
         <tr>
+          <td>Status</td>
+          <td class="${job.getStatus.toString}">${job.getStatus.toString}</td>
+        </tr>
+        <tr>
           <td>Author</td>
           <td>${job.getUser}</td>
         </tr>
         <tr>
-          <td>Created At</td>
+          <td>Created at</td>
           <td>${job.getStartTime.pp}</td>
         </tr>
       </tbody>
-    </table>  
+    </table>
   </div>
   <div class="span6">
     <h3>Runtime History</h3>
@@ -32,16 +36,16 @@
   </div>
 </div>
 
-<h3>Actions</h3>
+<h3>Materializations</h3>
 <table class="table table-striped table-bordered">
   <thead>
     <tr>
-      <th>Action</th>
-      <th>Action Time</th>
-      <th>Created On</th>
-      <th>Status</th>  
+      <th>#</th>
+      <th>Workflow time</th>
+      <th>Materialized on</th>
+      <th>Status</th>
       <th>External ID</th>
-      <th>Action</th>
+      <th>Workflow</th>
     </tr>
   </thead>
   <tbody>
@@ -51,7 +55,7 @@
         <td>${action.getActionNumber}</td>
         <td>${action.getNominalTime.pp}</td>
         <td>${action.getCreatedTime.pp}</td>
-        <td>${action.getStatus.toString}</td>
+        <td class="${action.getStatus.toString}">${action.getStatus.toString}</td>
         <td><a href="/workflows/${action.getExternalId}">${action.getExternalId}</a></td>
         <td>
           #if (rerun.contains(action.getStatus.toString))
@@ -66,17 +70,17 @@
   </tbody>
 </table>
 
-<h3>Job Definition</h3>
+<h3>Job definition</h3>
 <div id="definition">
   <pre class="brush: xml">
-    ${definition}  
+${definition}
   </pre>
 </div>
 
 <h3>Configuration</h3>
 <div id="config">
   <pre class="brush: xml">
-      ${job.getConf}
+${job.getConf}
   </pre>
 </div>
 <script type="text/javascript">

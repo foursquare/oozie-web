@@ -13,21 +13,21 @@
 <table class="table table-striped table-bordered">
   <thead>
     <tr>
-    <th>Name</th>
-    <th>Author</th>
-    <th>Status</th>
-    <th>Submitted</th>
-  </tr>  
+    <th width="45%">Name</th>
+    <th width="10%">Author</th>
+    <th width="25%">Submitted</th>
+    <th width="20%">Status</th>
+  </tr>
   </thead>
   <tbody>
     #for(workflow <- workflows)
       <tr>
         <td><a href="/workflows/${workflow.getId}">${workflow.getAppName}</a>  <span class="mini">(${workflow.getId})</span></td>
         <td>${workflow.getUser}</td>
-        <td>${workflow.getStatus.toString}</td>
         <td>${workflow.getStartTime.pp}</td>
+        <td class="${workflow.getStatus.toString}">${workflow.getStatus.toString}</td>
       </tr>
-    #end  
+    #end
   </tbody>
 </table>
 
@@ -36,21 +36,20 @@
 <table class="table table-striped table-bordered">
   <thead>
     <tr>
-    <th>Name</th>
-    <th>Author</th>
-    <th>Last Action</th>
-    <th>Status</th>
-    <th>Author</th>
-  </tr>  
+    <th width="45%">Name</th>
+    <th width="10%">Author</th>
+    <th width="25%">Last Action</th>
+    <th width="20%">Status</th>
+  </tr>
   </thead>
   <tbody>
-    #for(workflow <- coordinators)
+    #for(coordinator <- coordinators)
       <tr>
-        <td><a href="/coordinators/${workflow.getId}">${workflow.getAppName}</a>  <span class="mini">(${workflow.getId})</span></td>
-        <td>${workflow.getUser}</td>
-        <td>${workflow.getLastActionTime.pp}</td>
-        <td>${workflow.getStatus.toString}</td>
-        <td>${workflow.getUser}</td>
+        <td><a href="/coordinators/${coordinator.getId}">${coordinator.getAppName}</a>  <span class="mini">(${coordinator.getId})</span></td>
+        <td>${coordinator.getUser}</td>
+        <td>${coordinator.getLastActionTime.pp}</td>
+        <td class="${coordinator.getStatus.toString}">${coordinator.getStatus.toString}</td>
       </tr>
-    #end  
+    #end
   </tbody>
+</table>
