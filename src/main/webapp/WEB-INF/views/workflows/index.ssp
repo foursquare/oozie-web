@@ -19,9 +19,7 @@
   </li>
 </ul>
 <table class="table table-striped table-bordered">
-  
     <form id="filterForm" action="/workflows" method="get">
-      
     <tr>
       <th><input type="text"  name="name" value="${nameValue}" placeholder="name equals..."></th>
       <th><input type="text"  name="user" value="${userValue}" placeholder="user equals..."></th>
@@ -30,21 +28,19 @@
     </tr>
     </form>
     <tr>
-    <th>Name</th>
-    <th>User</th>
-    <th>Status</th>
-    <th>Created</th>
-  </tr>  
-  
+      <th>Name</th>
+      <th>User</th>
+      <th>Created</th>
+      <th>Status</th>
+    </tr>
     #for(workflow <- workflows)
       <tr>
         <td><a href="/workflows/${workflow.getId}">${workflow.getAppName}</a>  <span class="mini">(${workflow.getId})</span></td>
         <td>${workflow.getUser}</td>
-        <td>${workflow.getStatus.toString}</td>
         <td>${workflow.getCreatedTime.pp}</td>
+        <td class="${workflow.getStatus.toString}">${workflow.getStatus.toString}</td>
       </tr>
-    #end  
-  
+    #end
 </table>
 
 <ul class="pager">

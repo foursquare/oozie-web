@@ -14,18 +14,23 @@ form.form-mini {
 td.actions {
 
 }
-.bad {
-  background-color: #F2DEDE !important;
-}
-
-.good {
-  background-color: #DFF0D8 !important;
-}
-
-.neutral {
-  background-color: #F6F7DA !important;
-}
-
 div#runtimechart {
   height:150px;
+}
+
+h2 {
+  font-size: 25pt;
+  margin-bottom: 0.5em;
+}
+
+h3 {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.KILLED, .DONEWITHERROR, .ERROR, .FAILED {
+  color: red;
+}
+.SUCCEEDED {
+  color: green;
 }

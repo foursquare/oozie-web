@@ -12,14 +12,13 @@
   <thead>
     <tr>
     <th>Name</th>
-    <th>Author</th>
-    <th>Last Action</th>
+    <th>User</th>
     <th>Status</th>
-    <th>Author</th>
-    <th>Last Action</th>
-    <th>Action -1</th>
-    <th>Action -2</th>
-  </tr>  
+    <th>Last run</th>
+    <th>Materialization -1</th>
+    <th>Materialization -2</th>
+    <th>Materialization -3</th>
+  </tr>
   </thead>
   <tbody>
     #for(workflow <- jobs)
@@ -27,14 +26,13 @@
       <tr>
         <td class="${if (isRunning) "updateme" else "dontupdateme"}" id="${workflow.getId}"><a href="/coordinators/${workflow.getId}">${workflow.getAppName}</a></td>
         <td>${workflow.getUser}</td>
+        <td class="${workflow.getStatus.toString}">${workflow.getStatus.toString}</td>
         <td>${workflow.getLastActionTime.pp}</td>
-        <td>${workflow.getStatus.toString}</td>
-        <td>${workflow.getUser}</td>
-        <td class="actions" id="${workflow.getId}-action0">${if (isRunning) "loading..." else ""}</td>
+        <td class="actions" id="${workflow.getId}-action0">${if (isRunning) "Loading..." else ""}</td>
         <td class="actions" id="${workflow.getId}-action1"></td>
         <td class="actions" id="${workflow.getId}-action2"></td>
       </tr>
-    #end  
+    #end
   </tbody>
 </table>
 
@@ -47,16 +45,7 @@
         var statuses = data.split(",");
         for(var i = 0; i < statuses.length; i++){
           var elementId = "#" + id + "-action" + i;
-          $(elementId).html(statuses[i]);
-
-          if (statuses[i] == "FAILED" || statuses[i] == "KILLED") {
-            $(elementId).attr("class", $(elementId).attr("class") + " bad");
-
-          } else if (statuses[i] == "SUCCEEDED") {
-            $(elementId).attr("class", $(elementId).attr("class") + " good");
-          } else {
-            $(elementId).attr("class", $(elementId).attr("class") + " neutral");
-          }
+          $(elementId).attr('class', statuses[i]).html(statuses[i]);
         }
       });
     });
@@ -66,6 +55,4 @@
       }
     });
   });
-
-
 </script>
