@@ -8,6 +8,8 @@
     <link href="/static/css/shCore.css" rel="stylesheet">
     <link href="/static/css/shThemeDefault.css" rel="stylesheet">
 
+    <script type="text/javascript" src="http://d3js.org/d3.v2.js"></script>
+    <script type="text/javascript" src="/static/js/eyecandy.js"></script>
     <script type="text/javascript" src="/static/js/shCore.js"></script>
     <script type="text/javascript" src="/static/js/shBrushXml.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
