@@ -4,6 +4,15 @@
 <%@ var definition: String %>
 <%@ val props: List[String] %>
 <h2>${workflow.getAppName}</h2>
+<div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+  <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a href="#tabs-1">Info</a></li>
+    <li class="ui-state-default ui-corner-top"><a href="#tabs-2">Job Definition</a></li>
+    <li class="ui-state-default ui-corner-top"><a href="#tabs-3">Graph</a></li>
+  </ul>
+
+<div id="tabs-1" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+
 <div class="row">
   <div class="span6">
     <h3>Info</h3>
@@ -58,12 +67,17 @@
     #end
   </tbody>
 </table>
+</div> <!-- tab-->
+
+
+<div id="tabs-2" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
 <h3>Job Definition</h3>
 <div id="definition">
   <pre class="brush: xml">
 ${definition}
   </pre>
 </div>
+
 <h3>Configuration</h3>
 <div id="config">
   <pre class="brush: xml">
@@ -78,10 +92,17 @@ ${workflow.getConf}
     <br />
   #end
 </div>
-<h3>Graph&nbsp;<button id="reveal-graph">reveal</button></h3>
+</div> <!-- tab-->
+
+<div id="tabs-3" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+<h3>Graph</h3>
 <div id="graph">
         
 </div>
+</div> <!-- tab-->
+
+</div> <!-- tab outer-->
+
 <script type="text/javascript">
 
       $(document).ready(loadData());
@@ -92,4 +113,10 @@ ${workflow.getConf}
   $(document).ready(function(){
     SyntaxHighlighter.all();
   });
+</script>
+
+<script type="text/javascript">
+      $(function() {
+          $( "#tabs" ).tabs();
+            });
 </script>
