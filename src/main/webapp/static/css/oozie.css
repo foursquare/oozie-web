@@ -34,3 +34,12 @@ h3 {
 .SUCCEEDED {
   color: green;
 }
+
+#config {
+  padding-bottom: 20px;
+}
+
+#user-props {
+  padding-bottom: 20px;
+}
+

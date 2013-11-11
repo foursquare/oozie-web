@@ -113,6 +113,16 @@ class OozieDashboard() extends ScalatraServlet with ScalateSupport {
     }
   }
 
+  get("/workflows/:id/def") { 
+    contentType = "text/xml"
+    params.get("id") match { 
+      case Some(id) => { 
+        oozie.getJobDefinition(id)
+      }
+      case _ => halt(404)
+    }
+  }
+
   get("/coordinators") {
     val perPage = 1000
 
